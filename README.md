@@ -1,0 +1,2 @@
+# AwesomeWMRice
+Awesome WM rice
