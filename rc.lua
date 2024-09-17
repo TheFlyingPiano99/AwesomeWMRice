@@ -47,10 +47,6 @@ end
 -- Themes define colours, icons, font and wallpapers.
 beautiful.init("~/.config/awesome/theme.lua")
 
--- Set the default spacing (gap) between windows
-beautiful.useless_gap = 5  -- Adjust the number as per your preference (10 pixels in this example)
-
-
 -- This is used later as the default terminal and editor to run.
 terminal = "alacritty"
 editor = os.getenv("EDITOR") or "nano"

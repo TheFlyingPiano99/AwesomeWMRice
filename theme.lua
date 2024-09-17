@@ -11,24 +11,24 @@ local themes_path = gfs.get_themes_dir()
 
 local theme = {}
 
-theme.font          = "FiraCode Nerd Font"
+theme.font          = "FiraCode Nerd Font Normal 14"
 
 theme.bg_normal     = "#1f1f28"
-theme.bg_focus      = "#2d4f67"
+theme.bg_focus      = "#0f0f12"
 theme.bg_urgent     = "#ff0000"
 theme.bg_minimize   = "#444444"
 theme.bg_systray    = theme.bg_normal
 
-theme.fg_normal     = "#dcd7ba"
-theme.fg_focus      = "#c8c093"
+theme.fg_normal     = "#c8c093"
+theme.fg_focus      = "#dcd7ba"
 theme.fg_urgent     = "#ffffff"
 theme.fg_minimize   = "#ffffff"
 
-theme.useless_gap   = dpi(0)
+theme.useless_gap   = dpi(5)
 theme.border_width  = dpi(0)
 theme.border_normal = "#000000"
 theme.border_focus  = "#535d6c"
-theme.border_marked = "#91231c"
+theme.border_marked = "#c8c093"
 
 -- There are other variable sets
 -- overriding the default one when
@@ -62,7 +62,7 @@ theme.taglist_squares_unsel = theme_assets.taglist_squares_unsel(
 -- menu_[bg|fg]_[normal|focus]
 -- menu_[border_color|border_width]
 theme.menu_submenu_icon = themes_path.."default/submenu.png"
-theme.menu_height = dpi(15)
+theme.menu_height = dpi(24)
 theme.menu_width  = dpi(100)
 
 -- You can add as many variables as
