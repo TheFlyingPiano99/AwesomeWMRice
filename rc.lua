@@ -47,10 +47,23 @@ end
 -- Themes define colours, icons, font and wallpapers.
 beautiful.init("~/.config/awesome/theme.lua")
 
+-- Set the default spacing (gap) between windows
+beautiful.useless_gap = 5  -- Adjust the number as per your preference (10 pixels in this example)
+
+
 -- This is used later as the default terminal and editor to run.
 terminal = "alacritty"
 editor = os.getenv("EDITOR") or "nano"
 editor_cmd = terminal .. " -e " .. editor
+
+-- Function to set opacity for terminal windows
+local function set_terminal_opacity(c)
+    -- Check if the window is a terminal
+    if c.class == terminal then
+        -- Set opacity (0.0 = fully transparent, 1.0 = fully opaque)
+        c.opacity = 0.4
+    end
+end
 
 -- Default modkey.
 -- Usually, Mod4 is the key with a logo between Control and Alt.
@@ -94,9 +107,6 @@ mymainmenu = awful.menu({ items = { { "awesome", myawesomemenu, beautiful.awesom
                                     { "open terminal", terminal }
                                   }
                         })
-
-mylauncher = awful.widget.launcher({ image = beautiful.awesome_icon,
-                                     menu = mymainmenu })
 
 -- Menubar configuration
 menubar.utils.terminal = terminal -- Set the terminal for applications that require it
@@ -151,14 +161,7 @@ local tasklist_buttons = gears.table.join(
 
 local function set_wallpaper(s)
     -- Wallpaper
-    if beautiful.wallpaper then
-        local wallpaper = beautiful.wallpaper
-        -- If wallpaper is a function, call it with the screen
-        if type(wallpaper) == "function" then
-            wallpaper = wallpaper(s)
-        end
-        gears.wallpaper.maximized(wallpaper, s, true)
-    end
+    awful.spawn.with_shell("nitrogen ~/.config/awesome/backgrounds/lofi_bgr.png --set-zoom-fill")
 end
 
 -- Re-set wallpaper when a screen's geometry changes (e.g. different resolution)
@@ -169,7 +172,7 @@ awful.screen.connect_for_each_screen(function(s)
     set_wallpaper(s)
 
     -- Each screen has its own tag table.
-    awful.tag({ "1", "2", "3", "4", "5", "6", "7", "8", "9" }, s, awful.layout.layouts[1])
+    awful.tag({ "I", "II", "III", "IV", "V", "VI", }, s, awful.layout.layouts[1])
 
     -- Create a promptbox for each screen
     s.mypromptbox = awful.widget.prompt()
@@ -185,14 +188,54 @@ awful.screen.connect_for_each_screen(function(s)
     s.mytaglist = awful.widget.taglist {
         screen  = s,
         filter  = awful.widget.taglist.filter.all,
-        buttons = taglist_buttons
+        buttons = taglist_buttons,
+        style = {
+            font = "FiraCode Nerd Font Bold 16"
+        },
+        widget_template = {
+            {
+                {
+                    id = 'text_role',
+                    widget = wibox.widget.textbox,
+                    align = "center",
+                    valign = "center",
+                },
+
+                forced_width = 80,
+                forced_height = 50,
+                widget = wibox.container.background,
+            },
+            id = 'background_role',
+            widget = wibox.container.background,
+        },
     }
 
     -- Create a tasklist widget
     s.mytasklist = awful.widget.tasklist {
         screen  = s,
         filter  = awful.widget.tasklist.filter.currenttags,
-        buttons = tasklist_buttons
+        buttons = tasklist_buttons,
+        --style = {
+        --    shape = gears.shape.rounded_bar,
+        --},
+        layout = {
+            spacing = 5,
+            layout = wibox.layout.fixed.horizontal
+        },
+        --[[
+        widget_template = {
+            {
+                {
+                    awful.widget.clienticon, -- This adds the icon
+                    margins = 4,
+                    widget  = wibox.container.margin,
+                    layout = wibox.layout.fixed.horizontal,
+                },
+                layout = wibox.layout.align.horizontal,
+            },
+            id = "background_role",
+            widget = wibox.container.background,
+        }]]--
     }
 
     -- Create the wibox
@@ -203,7 +246,6 @@ awful.screen.connect_for_each_screen(function(s)
         layout = wibox.layout.align.horizontal,
         { -- Left widgets
             layout = wibox.layout.fixed.horizontal,
-            mylauncher,
             s.mytaglist,
             s.mypromptbox,
         },
@@ -446,7 +488,7 @@ root.keys(globalkeys)
 awful.rules.rules = {
     -- All clients will match this rule.
     { rule = { },
-      properties = { border_width = beautiful.border_width,
+      properties = { border_width = 0, -- No border
                      border_color = beautiful.border_normal,
                      focus = awful.client.focus.filter,
                      raise = true,
@@ -486,7 +528,7 @@ awful.rules.rules = {
           "ConfigManager",  -- Thunderbird's about:config.
           "pop-up",       -- e.g. Google Chrome's (detached) Developer Tools.
         }
-      }, properties = { floating = true }},
+      }, properties = { floating = false }},
 
     -- Add titlebars to normal clients and dialogs
     { rule_any = {type = { "normal", "dialog" }
@@ -498,6 +540,8 @@ awful.rules.rules = {
     --   properties = { screen = 1, tag = "2" } },
 }
 -- }}}
+
+local border_radius = 10  -- Adjust the radius to fit your needs
 
 -- {{{ Signals
 -- Signal function to execute when a new client appears.
@@ -512,6 +556,13 @@ client.connect_signal("manage", function (c)
         -- Prevent clients from being unreachable after screen count changes.
         awful.placement.no_offscreen(c)
     end
+    set_terminal_opacity(c)
+
+end)
+
+-- Apply settings to existing clients
+client.connect_signal("property::class", function(c)
+    set_terminal_opacity(c)
 end)
 
 -- Add a titlebar if titlebars_enabled is set to true in the rules.
@@ -530,7 +581,7 @@ client.connect_signal("request::titlebars", function(c)
 
     awful.titlebar(c) : setup {
         { -- Left
-            awful.titlebar.widget.iconwidget(c),
+            --awful.titlebar.widget.iconwidget(c),
             buttons = buttons,
             layout  = wibox.layout.fixed.horizontal
         },
@@ -543,11 +594,11 @@ client.connect_signal("request::titlebars", function(c)
             layout  = wibox.layout.flex.horizontal
         },
         { -- Right
-            awful.titlebar.widget.floatingbutton (c),
-            awful.titlebar.widget.maximizedbutton(c),
-            awful.titlebar.widget.stickybutton   (c),
-            awful.titlebar.widget.ontopbutton    (c),
-            awful.titlebar.widget.closebutton    (c),
+            --awful.titlebar.widget.floatingbutton (c),
+            --awful.titlebar.widget.maximizedbutton(c),
+            --awful.titlebar.widget.stickybutton   (c),
+            --awful.titlebar.widget.ontopbutton    (c),
+            --awful.titlebar.widget.closebutton    (c),
             layout = wibox.layout.fixed.horizontal()
         },
         layout = wibox.layout.align.horizontal
@@ -562,3 +613,10 @@ end)
 client.connect_signal("focus", function(c) c.border_color = beautiful.border_focus end)
 client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
 -- }}}
+
+-- Autostart applications:
+awful.spawn.with_shell("picom --config ~/.config/awesome/picom/picom.conf")
+awful.spawn.with_shell("")
+awful.spawn.with_shell("")
+
+
