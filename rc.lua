@@ -53,11 +53,10 @@ editor = os.getenv("EDITOR") or "nano"
 editor_cmd = terminal .. " -e " .. editor
 
 -- Function to set opacity for terminal windows
-local function set_terminal_opacity(c)
+local function config_terminal(c)
     -- Check if the window is a terminal
     if c.class == terminal then
-        -- Set opacity (0.0 = fully transparent, 1.0 = fully opaque)
-        c.opacity = 0.4
+        
     end
 end
 
@@ -446,7 +445,6 @@ awful.rules.rules = {
                      placement = awful.placement.no_overlap+awful.placement.no_offscreen
      }
     },
-
     -- Floating clients.
     { rule_any = {
         instance = {
@@ -476,7 +474,8 @@ awful.rules.rules = {
           "ConfigManager",  -- Thunderbird's about:config.
           "pop-up",       -- e.g. Google Chrome's (detached) Developer Tools.
         }
-      }, properties = { floating = false }},
+      }, properties = { floating = false }
+    },
 
     -- Add titlebars to normal clients and dialogs
     { rule_any = {type = { "normal", "dialog" }
@@ -502,21 +501,13 @@ client.connect_signal("manage", function (c)
         -- Prevent clients from being unreachable after screen count changes.
         awful.placement.no_offscreen(c)
     end
-    set_terminal_opacity(c)
-    local screen_geometry = c.screen.workarea
-    g = c:geometry()
-    c:geometry({
-        x = g.x,
-        y = g.y + 50,
-        width = g.width,
-        height = g.height
-    })
+    config_terminal(c)
 
 end)
 
 -- Apply settings to existing clients
 client.connect_signal("property::class", function(c)
-    set_terminal_opacity(c)
+    config_terminal(c)
 end)
 
 -- Add a titlebar if titlebars_enabled is set to true in the rules.
