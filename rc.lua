@@ -133,27 +133,6 @@ local taglist_buttons = gears.table.join(
                     awful.button({ }, 5, function(t) awful.tag.viewprev(t.screen) end)
                 )
 
-local tasklist_buttons = gears.table.join(
-                     awful.button({ }, 1, function (c)
-                                              if c == client.focus then
-                                                  c.minimized = true
-                                              else
-                                                  c:emit_signal(
-                                                      "request::activate",
-                                                      "tasklist",
-                                                      {raise = true}
-                                                  )
-                                              end
-                                          end),
-                     awful.button({ }, 3, function()
-                                              awful.menu.client_list({ theme = { width = 250 } })
-                                          end),
-                     awful.button({ }, 4, function ()
-                                              awful.client.focus.byidx(1)
-                                          end),
-                     awful.button({ }, 5, function ()
-                                              awful.client.focus.byidx(-1)
-                                          end))
 
 local function set_wallpaper(s)
     -- Wallpaper
@@ -206,33 +185,6 @@ awful.screen.connect_for_each_screen(function(s)
         },
     }
 
-    -- Create a tasklist widget
-    s.mytasklist = awful.widget.tasklist {
-        screen  = s,
-        filter  = awful.widget.tasklist.filter.currenttags,
-        buttons = tasklist_buttons,
-        --style = {
-        --    shape = gears.shape.rounded_bar,
-        --},
-        layout = {
-            spacing = 5,
-            layout = wibox.layout.fixed.horizontal
-        },
-        --[[
-        widget_template = {
-            {
-                {
-                    awful.widget.clienticon, -- This adds the icon
-                    margins = 4,
-                    widget  = wibox.container.margin,
-                    layout = wibox.layout.fixed.horizontal,
-                },
-                layout = wibox.layout.align.horizontal,
-            },
-            id = "background_role",
-            widget = wibox.container.background,
-        }]]--
-    }
 
     -- Create the wibox
     s.mywibox = awful.wibar({ position = "top", screen = s })
@@ -484,7 +436,7 @@ root.keys(globalkeys)
 awful.rules.rules = {
     -- All clients will match this rule.
     { rule = { },
-      properties = { border_width = 0, -- No border
+      properties = { border_width = beautiful.border_width,
                      border_color = beautiful.border_normal,
                      focus = awful.client.focus.filter,
                      raise = true,
@@ -528,7 +480,7 @@ awful.rules.rules = {
 
     -- Add titlebars to normal clients and dialogs
     { rule_any = {type = { "normal", "dialog" }
-      }, properties = { titlebars_enabled = true }
+      }, properties = { titlebars_enabled = false }
     },
 
     -- Set Firefox to always map on the tag named "2" on screen 1.
@@ -536,8 +488,6 @@ awful.rules.rules = {
     --   properties = { screen = 1, tag = "2" } },
 }
 -- }}}
-
-local border_radius = 10  -- Adjust the radius to fit your needs
 
 -- {{{ Signals
 -- Signal function to execute when a new client appears.
@@ -553,6 +503,14 @@ client.connect_signal("manage", function (c)
         awful.placement.no_offscreen(c)
     end
     set_terminal_opacity(c)
+    local screen_geometry = c.screen.workarea
+    g = c:geometry()
+    c:geometry({
+        x = g.x,
+        y = g.y + 50,
+        width = g.width,
+        height = g.height
+    })
 
 end)
 

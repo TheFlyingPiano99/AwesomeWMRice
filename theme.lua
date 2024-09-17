@@ -16,18 +16,19 @@ theme.font          = "FiraCode Nerd Font Normal 14"
 theme.bg_normal     = "#1f1f28"
 theme.bg_focus      = "#0f0f12"
 theme.bg_urgent     = "#ff0000"
-theme.bg_minimize   = "#444444"
+theme.bg_minimize   = "#1f1f28"
 theme.bg_systray    = theme.bg_normal
 
 theme.fg_normal     = "#c8c093"
 theme.fg_focus      = "#dcd7ba"
 theme.fg_urgent     = "#ffffff"
-theme.fg_minimize   = "#ffffff"
+theme.fg_minimize   = "#c8c093"
+theme.fg_systray    = theme.fg_normal
 
 theme.useless_gap   = dpi(5)
-theme.border_width  = dpi(0)
-theme.border_normal = "#000000"
-theme.border_focus  = "#535d6c"
+theme.border_width  = dpi(4)
+theme.border_normal = "#0c0c0f"
+theme.border_focus  = "#2d4f67"
 theme.border_marked = "#c8c093"
 
 -- There are other variable sets
@@ -124,7 +125,7 @@ theme.awesome_icon = theme_assets.awesome_icon(
 
 -- Define the icon theme for application icons. If not set then the icons
 -- from /usr/share/icons and /usr/share/icons/hicolor will be used.
-theme.icon_theme = nil
+theme.icon_theme = "Papirus-Dark"
 
 return theme
 
